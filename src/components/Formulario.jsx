@@ -15,8 +15,15 @@ const Formulario = ({pacientes, setPacientes}) => {
   const [email, setEmail] = useState('')
   const [fecha, setFecha] = useState('')
   const [sintomas, setSintomas] = useState('')
+  
   const [error, setError] = useState(false)
 
+  const generarId = () => {
+    const random = Math.random().toString(36).substring(2)
+    const fecha = Date.now().toString(36)
+
+    return fecha+random
+  }
   const handleSubmit = (evt) => {
     evt.preventDefault()
 
@@ -32,7 +39,8 @@ const Formulario = ({pacientes, setPacientes}) => {
       propietario, 
       email,
       fecha,
-      sintomas
+      sintomas,
+      id: generarId()
     }
     setPacientes([...pacientes, objetoPaciente])
     //Reinicar el formulario
@@ -54,7 +62,7 @@ const Formulario = ({pacientes, setPacientes}) => {
         <span className="text-indigo-600 font-bold ">Administralos</span>
       </p>
       <form 
-        className='bg-white shadow-md rounded-md py-10 px-5 mb-10 mx-5'
+        className='bg-stone-300 shadow-md rounded-md py-10 px-5 mb-10 mx-5'
         onSubmit= {handleSubmit}   
       >      
       {error && <Error >'Todos los campos son obligatorios'</Error>}
