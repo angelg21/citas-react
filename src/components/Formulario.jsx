@@ -9,7 +9,7 @@ import Error from './Error'
 //Los hooks se colocan en la parte superior de los componentes de react
 //No se deben colocar dentro de codicionales o despues de un return
 
-const Formulario = ({pacientes, setPacientes}) => {
+const Formulario = ({pacientes, setPacientes, paciente, setPaciente}) => {
   const [nombre, setNombre] = useState('')
   const [propietario, setPropietario] = useState('')
   const [email, setEmail] = useState('')
@@ -17,6 +17,25 @@ const Formulario = ({pacientes, setPacientes}) => {
   const [sintomas, setSintomas] = useState('')
   
   const [error, setError] = useState(false)
+ 
+  //Este useEffect se va a ejecutar cuando paciente haya sufrido algun cambio
+  //Para comprobar si un arreglo esta vacio o no se usa Object.keys(arreglo)
+  //Object.keys devuelve un array cuyos elementos son strings correspondientes a
+  //las propiedades enumerables que se encuentran directamente en el object.
+  useEffect(() => {
+    if(Object.keys(paciente).length > 0){
+      setNombre(paciente.nombre)
+      setPropietario(paciente.propietario)
+      setEmail(paciente.email)
+      setFecha(paciente.fecha)
+      setSintomas(paciente.sintomas)
+    }
+  }, [paciente])
+
+  //Este useEffect se va a ejecutar cuando el componente este listo(haya cargado), (en este caso seria formulario)
+  // useEffect (() => {
+  //   console.log("El componente esta listo")
+  // }, [])
 
   const generarId = () => {
     const random = Math.random().toString(36).substring(2)
@@ -28,7 +47,7 @@ const Formulario = ({pacientes, setPacientes}) => {
     evt.preventDefault()
 
     //Validacion del Formulario
-    if([nombre, propietario, email,fecha,sintomas].includes('')){
+    if([nombre, propietario, email, fecha, sintomas].includes('')){
       setError(true)
       return;
     }
@@ -39,10 +58,22 @@ const Formulario = ({pacientes, setPacientes}) => {
       propietario, 
       email,
       fecha,
-      sintomas,
-      id: generarId()
+      sintomas
     }
-    setPacientes([...pacientes, objetoPaciente])
+
+    if(paciente.id){
+      //Editando el Registro
+      objetoPaciente.id = paciente.id
+      const pacientesActualizados = pacientes.map(pacientesState => pacientesState.id === 
+        paciente.id ? objetoPaciente : pacientesState)
+      setPacientes(pacientesActualizados)
+      setPaciente({})
+    }else{
+      //Nuevo Registro
+      objetoPaciente.id = generarId()
+      setPacientes([...pacientes, objetoPaciente])      
+    }
+
     //Reinicar el formulario
     setNombre('')
     setPropietario('')
@@ -124,8 +155,7 @@ const Formulario = ({pacientes, setPacientes}) => {
         <input
           type='submit'
           className='bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-indigo-700 cursor-pointer transition-all '  
-          value='Agregar Paciente'
-
+          value= {paciente.id? 'Editar Paciente' : 'Agregar Paciente'}
         />
       </form>
     </div>
